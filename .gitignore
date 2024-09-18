@@ -1,2 +1,7 @@
+<<<<<<< HEAD
 /node_modules
 .env
+=======
+.env
+node_modules
+>>>>>>> f3bf3d1 (Initial commit)
