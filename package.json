@@ -1,13 +1,7 @@
 {
-<<<<<<< HEAD
-  "name": "recipeapi_backend1",
-  "version": "1.0.0",
-  "main": "server.js",
-=======
   "name": "dishes_sample",
   "version": "1.0.0",
   "main": "index.js",
->>>>>>> f3bf3d1 (Initial commit)
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
@@ -18,11 +12,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-<<<<<<< HEAD
-    "body-parser": "^1.20.3",
-    "cors": "^2.8.5",
-=======
->>>>>>> f3bf3d1 (Initial commit)
+
     "dotenv": "^16.4.5",
     "express": "^4.21.0",
     "mongoose": "^8.6.2"
