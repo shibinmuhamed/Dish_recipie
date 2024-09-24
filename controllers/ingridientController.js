@@ -1,5 +1,6 @@
 const Ingredient = require("../models/Ingredient");
 
+
 // Add a new ingredient
 exports.createIngredient = async (req, res) => {
   try {
