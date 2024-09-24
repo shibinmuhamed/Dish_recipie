@@ -22,7 +22,6 @@ exports.getAllIngredients = async (req, res) => {
   }
 };
 
-
 //update ingredient
 exports.updateIngredient = async (req, res) => {
   try {

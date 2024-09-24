@@ -8,7 +8,7 @@ const ingredientSchema = new mongoose.Schema({
 
 const dishSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  ingredients: [ingredientSchema], 
+  ingredients: [ingredientSchema],
 });
 
 module.exports = mongoose.model("Dish", dishSchema);
