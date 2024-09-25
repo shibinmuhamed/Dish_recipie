@@ -8,7 +8,8 @@ const {
   //updateDishWithHistory,
   startCooking,
   stopCooking,
-  getAllDishesHistory
+  getAllDishesHistory,
+  addIngredientsAndUpdateStock
 } = require("../controllers/dishController");
 const router = express.Router();
 
@@ -22,8 +23,11 @@ router.delete("/dish/:Id", deleteDish);
 //router.put('/dishes/:dishId',updateDishWithHistory);
 router.put('/dishes/:dishId/start',startCooking);
 router.put('/dishes/:dishId/stop', stopCooking);
-
-
 router.get('/dishes/history',getAllDishesHistory);
+
+
+router.put('/dishes/:dishId/add-ing', addIngredientsAndUpdateStock);
+
+
 
 module.exports = router;

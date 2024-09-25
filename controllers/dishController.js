@@ -2,6 +2,8 @@ const Dish = require("../models/Dish");
 const Ingredient = require("../models/Ingredient");
 const DishHistory = require("../models/dishHistory");
 const mongoose = require('mongoose');
+const ApiFeatures = require("../Utils/apiFeatures");
+
 
 
 // Create a new dishes
@@ -216,10 +218,17 @@ exports.stopCooking = async (req, res) => {
 // Fetch the history of all dishes
 exports.getAllDishesHistory = async (req, res) => {
   try {
+    let query = DishHistory.find().populate("ingredients.ingredient", "name"); 
+
     // Find all history entries across all dishes
-    const history = await DishHistory.find()
-      .sort({ updatedAt: -1 })
-      .populate("ingredients.ingredient", "name");
+    const historyQuery = new ApiFeatures(query,req.query)
+      .sort()
+      // .populate("ingredients.ingredient", "name")
+      .filter()
+      .limitFields()
+      .paginate();
+
+    const history =await historyQuery.query;
 
     if (!history.length) {
       return res
@@ -232,8 +241,69 @@ exports.getAllDishesHistory = async (req, res) => {
       history,
     });
   } catch (error) {
+    console.error("Error fetching history of all dishes:", error);
     res
       .status(500)
-      .json({ message: "Error fetching history of all dishes", error });
+      .json({ message: "Error fetching history of all dishes", 
+      error: error.message || "An unknown error occurred",
+      stack: error.stack, });
   }
+};
+
+
+
+
+// API to add ingredients to a dish and deduct from global stock
+exports.addIngredientsAndUpdateStock = async (req, res) => {
+  try {
+    const { dishId } = req.params;
+    const { ingredients } = req.body; // Array of ingredients with their quantities
+
+    // Find the dish by ID
+    const dish = await Dish.findById(dishId);
+    if (!dish) {
+      return res.status(404).json({ message: 'Dish not found' });
+    }
+
+    // Loop through each ingredient to add to the dish and deduct from stock
+    for (const ing of ingredients) {
+      const ingredientId = new mongoose.Types.ObjectId(ing.ingredientId);
+      const ingredient = await Ingredient.findById(ingredientId);
+
+      if (!ingredient) {
+        return res.status(404).json({ message: `Ingredient with id ${ingredientId} not found` });
+      }
+
+      // Check if there is enough stock to deduct
+      if (ingredient.stockQuantity < ing.newQuantity) {
+        return res.status(400).json({ message: `Insufficient stock for ingredient ${ingredient.name}` });
+      }
+
+      // Deduct the quantity from the global stock
+      ingredient.stockQuantity -= ing.newQuantity;
+      await ingredient.save();
+
+      // Add or update the ingredient in the dish's ingredient list
+      const dishIngredient = dish.ingredients.find(i => i.ingredient.equals(ingredientId));
+
+      if (dishIngredient) {
+        dishIngredient.quantity += ing.newQuantity; // Update the quantity if already present
+      } else {
+        // Add a new ingredient entry
+        dish.ingredients.push({
+          ingredient: ingredientId,
+          quantity: ing.newQuantity
+        });
+      }
+    }
+
+    // Save the updated dish
+    await dish.save();
+
+    res.status(200).json({ message: 'Ingredients added and stock updated', dish });
+  } catch (error) {
+    console.error('Error adding ingredients and updating stock:', error);
+    res.status(500).json({ message: 'Error adding ingredients and updating stock', error });
+  }
+  
 };
