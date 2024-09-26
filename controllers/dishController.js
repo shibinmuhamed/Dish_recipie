@@ -1,10 +1,8 @@
 const Dish = require("../models/Dish");
 const Ingredient = require("../models/Ingredient");
 const DishHistory = require("../models/dishHistory");
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const ApiFeatures = require("../Utils/apiFeatures");
-
-
 
 // Create a new dishes
 exports.createDish = async (req, res) => {
@@ -131,9 +129,6 @@ exports.deleteDish = async (req, res) => {
 //   }
 // };
 
-
-
-
 // Start cooking and update multiple ingredients' quantities
 exports.startCooking = async (req, res) => {
   try {
@@ -143,15 +138,15 @@ exports.startCooking = async (req, res) => {
     // Find the dish by ID
     const dish = await Dish.findById(dishId);
     if (!dish) {
-      return res.status(404).json({ message: 'Dish not found' });
+      return res.status(404).json({ message: "Dish not found" });
     }
 
     const historyEntry = new DishHistory({
       dishId: dish._id,
       name: dish.name,
       ingredients: dish.ingredients,
-      status: 'cooking started', 
-      updatedAt: new Date() 
+      status: "cooking started",
+      updatedAt: new Date(),
     });
     await historyEntry.save();
 
@@ -160,9 +155,15 @@ exports.startCooking = async (req, res) => {
       const ingredientId = new mongoose.Types.ObjectId(ing.ingredientId); // Convert to ObjectId
 
       // Find the ingredient in the dish's ingredients array
-      const ingredient = dish.ingredients.find(ingr => ingr.ingredient.equals(ingredientId));
+      const ingredient = dish.ingredients.find((ingr) =>
+        ingr.ingredient.equals(ingredientId)
+      );
       if (!ingredient) {
-        return res.status(404).json({ message: `Ingredient with id ${ingredientId} not found in this dish` });
+        return res
+          .status(404)
+          .json({
+            message: `Ingredient with id ${ingredientId} not found in this dish`,
+          });
       }
 
       // Update the quantity for the found ingredient
@@ -172,10 +173,12 @@ exports.startCooking = async (req, res) => {
     // Save the updated dish
     await dish.save();
 
-    res.status(200).json({ message: 'Cooking started, quantities updated', dish });
+    res
+      .status(200)
+      .json({ message: "Cooking started, quantities updated", dish });
   } catch (error) {
-    console.error('Error updating ingredients:', error)
-    res.status(500).json({ message: 'Error updating ingredients', error });
+    console.error("Error updating ingredients:", error);
+    res.status(500).json({ message: "Error updating ingredients", error });
   }
 };
 
@@ -188,7 +191,7 @@ exports.stopCooking = async (req, res) => {
     // Find the dish by ID
     const dish = await Dish.findById(dishId);
     if (!dish) {
-      return res.status(404).json({ message: 'Dish not found' });
+      return res.status(404).json({ message: "Dish not found" });
     }
 
     // Logic to stop cooking could include saving a final state or just sending a response
@@ -197,38 +200,32 @@ exports.stopCooking = async (req, res) => {
       dishId: dish._id,
       name: dish.name,
       ingredients: dish.ingredients,
-      status: 'cooking ended',
-      updatedAt: new Date() // Save timestamp of the stop action
+      status: "cooking ended",
+      updatedAt: new Date(), // Save timestamp of the stop action
     });
     await historyEntry.save();
 
     // Send "Cooking ended" message
-    res.status(200).json({ message: 'Cooking ended', dish });
+    res.status(200).json({ message: "Cooking ended", dish });
   } catch (error) {
-    res.status(500).json({ message: 'Error stopping cooking process', error });
+    res.status(500).json({ message: "Error stopping cooking process", error });
   }
 };
-
-
-
-
-
-
 
 // Fetch the history of all dishes
 exports.getAllDishesHistory = async (req, res) => {
   try {
-    let query = DishHistory.find().populate("ingredients.ingredient", "name"); 
+    let query = DishHistory.find().populate("ingredients.ingredient", "name");
 
     // Find all history entries across all dishes
-    const historyQuery = new ApiFeatures(query,req.query)
+    const historyQuery = new ApiFeatures(query, req.query)
       .sort()
       // .populate("ingredients.ingredient", "name")
       .filter()
       .limitFields()
       .paginate();
 
-    const history =await historyQuery.query;
+    const history = await historyQuery.query;
 
     if (!history.length) {
       return res
@@ -244,14 +241,13 @@ exports.getAllDishesHistory = async (req, res) => {
     console.error("Error fetching history of all dishes:", error);
     res
       .status(500)
-      .json({ message: "Error fetching history of all dishes", 
-      error: error.message || "An unknown error occurred",
-      stack: error.stack, });
+      .json({
+        message: "Error fetching history of all dishes",
+        error: error.message || "An unknown error occurred",
+        stack: error.stack,
+      });
   }
 };
-
-
-
 
 // API to add ingredients to a dish and deduct from global stock
 exports.addIngredientsAndUpdateStock = async (req, res) => {
@@ -262,7 +258,7 @@ exports.addIngredientsAndUpdateStock = async (req, res) => {
     // Find the dish by ID
     const dish = await Dish.findById(dishId);
     if (!dish) {
-      return res.status(404).json({ message: 'Dish not found' });
+      return res.status(404).json({ message: "Dish not found" });
     }
 
     // Loop through each ingredient to add to the dish and deduct from stock
@@ -271,12 +267,18 @@ exports.addIngredientsAndUpdateStock = async (req, res) => {
       const ingredient = await Ingredient.findById(ingredientId);
 
       if (!ingredient) {
-        return res.status(404).json({ message: `Ingredient with id ${ingredientId} not found` });
+        return res
+          .status(404)
+          .json({ message: `Ingredient with id ${ingredientId} not found` });
       }
 
       // Check if there is enough stock to deduct
       if (ingredient.stockQuantity < ing.newQuantity) {
-        return res.status(400).json({ message: `Insufficient stock for ingredient ${ingredient.name}` });
+        return res
+          .status(400)
+          .json({
+            message: `Insufficient stock for ingredient ${ingredient.name}`,
+          });
       }
 
       // Deduct the quantity from the global stock
@@ -284,7 +286,9 @@ exports.addIngredientsAndUpdateStock = async (req, res) => {
       await ingredient.save();
 
       // Add or update the ingredient in the dish's ingredient list
-      const dishIngredient = dish.ingredients.find(i => i.ingredient.equals(ingredientId));
+      const dishIngredient = dish.ingredients.find((i) =>
+        i.ingredient.equals(ingredientId)
+      );
 
       if (dishIngredient) {
         dishIngredient.quantity += ing.newQuantity; // Update the quantity if already present
@@ -292,7 +296,7 @@ exports.addIngredientsAndUpdateStock = async (req, res) => {
         // Add a new ingredient entry
         dish.ingredients.push({
           ingredient: ingredientId,
-          quantity: ing.newQuantity
+          quantity: ing.newQuantity,
         });
       }
     }
@@ -300,10 +304,13 @@ exports.addIngredientsAndUpdateStock = async (req, res) => {
     // Save the updated dish
     await dish.save();
 
-    res.status(200).json({ message: 'Ingredients added and stock updated', dish });
+    res
+      .status(200)
+      .json({ message: "Ingredients added and stock updated", dish });
   } catch (error) {
-    console.error('Error adding ingredients and updating stock:', error);
-    res.status(500).json({ message: 'Error adding ingredients and updating stock', error });
+    console.error("Error adding ingredients and updating stock:", error);
+    res
+      .status(500)
+      .json({ message: "Error adding ingredients and updating stock", error });
   }
-  
 };
