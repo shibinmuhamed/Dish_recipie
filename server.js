@@ -1,4 +1,6 @@
 const express = require("express");
+const cors = require("cors");
+
 const connnectDb = require("./config/dbConnection");
 const dishRoutes = require("./routes/dishRoutes");
 const ingredientRoutes = require("./routes/ingRoutes");
@@ -10,6 +12,7 @@ const app = express();
 
 const port = process.env.PORT || 5000;
 app.use(express.json());
+app.use(cors({ origin: "*" }));
 
 app.use("/api", dishRoutes);
 app.use("/api", ingredientRoutes);
