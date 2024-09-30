@@ -314,3 +314,68 @@ exports.addIngredientsAndUpdateStock = async (req, res) => {
       .json({ message: "Error adding ingredients and updating stock", error });
   }
 };
+
+exports.startCookingAndUpdateStock = async (req, res) => {
+  try {
+    const { dishId } = req.params;
+    const { ingredients } = req.body; // Array of ingredients with new quantities
+
+    // Find the dish by ID
+    const dish = await Dish.findById(dishId);
+    if (!dish) {
+      return res.status(404).json({ message: "Dish not found" });
+    }
+
+    // Create a history entry before modifying the dish
+    const historyEntry = new DishHistory({
+      dishId: dish._id,
+      name: dish.name,
+      ingredients: dish.ingredients, // Store the current state of ingredients before modification
+      status: "cooking started",
+      updatedAt: new Date(),
+    });
+    await historyEntry.save();
+
+    // Loop through each ingredient to update the dish and deduct from the stock
+    for (const ing of ingredients) {
+      const ingredientId = new mongoose.Types.ObjectId(ing.ingredientId); // Convert to ObjectId
+
+      // Find the ingredient in the global ingredient collection
+      const globalIngredient = await Ingredient.findById(ingredientId);
+      if (!globalIngredient) {
+        return res.status(404).json({ message: `Ingredient with id ${ingredientId} not found in global stock` });
+      }
+
+      // Check if there is enough stock to deduct
+      if (globalIngredient.stockQuantity < ing.newQuantity) {
+        return res.status(400).json({ message: `Insufficient stock for ingredient ${globalIngredient.name}` });
+      }
+
+      // Deduct the quantity from the global stock
+      globalIngredient.stockQuantity -= ing.newQuantity;
+      await globalIngredient.save();
+
+      // Update or add the ingredient in the dish's ingredient list
+      const dishIngredient = dish.ingredients.find(i => i.ingredient.equals(ingredientId));
+
+      if (dishIngredient) {
+        dishIngredient.quantity += ing.newQuantity; // Update the quantity if already present
+      } else {
+        // Add a new ingredient entry to the dish
+        dish.ingredients.push({
+          ingredient: ingredientId,
+          quantity: ing.newQuantity,
+        });
+      }
+    }
+
+    // Save the updated dish
+    await dish.save();
+
+    // Return success response
+    res.status(200).json({ message: "Cooking started, ingredients updated, and stock deducted", dish });
+  } catch (error) {
+    console.error("Error updating ingredients and stock:", error);
+    res.status(500).json({ message: "Error updating ingredients and stock", error });
+  }
+};

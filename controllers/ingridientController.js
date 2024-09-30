@@ -1,17 +1,44 @@
 const Ingredient = require("../models/Ingredient");
 
+const ApiFeatures = require("../Utils/apiFeatures");
+
+
 
 // Add a new ingredient
 exports.createIngredient = async (req, res) => {
   try {
-    const { name, quantity } = req.body;
-    const ingredient = new Ingredient({ name, quantity });
+    const { name, stockQuantity } = req.body;
+
+    // Check if the name or stockQuantity is missing
+    if (!name || stockQuantity == null) {
+      return res.status(400).json({ message: "Name and stockQuantity are required" });
+    }
+
+    // Create a new ingredient
+    const ingredient = new Ingredient({
+      name,
+      stockQuantity: Number(stockQuantity), // Ensure stockQuantity is a number
+    });
+
+    // Save the ingredient to the database
     await ingredient.save();
-    res.status(201).json(ingredient);
+
+    // Respond with the created ingredient
+    res.status(201).json({ message: "Ingredient created successfully", ingredient });
   } catch (error) {
+    if (error.code === 11000) {
+      // Duplicate key error handling
+      return res.status(400).json({
+        message: `Ingredient with the name '${error.keyValue.name}' already exists`,
+      });
+    }
+    
+    // Catch any other errors
+    console.error("Error creating ingredient:", error);
     res.status(500).json({ message: "Error creating ingredient", error });
   }
 };
+
 
 // Get all ingredients
 exports.getAllIngredients = async (req, res) => {

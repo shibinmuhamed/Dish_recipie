@@ -9,7 +9,9 @@ const {
   startCooking,
   stopCooking,
   getAllDishesHistory,
-  addIngredientsAndUpdateStock
+  //addIngredientsAndUpdateStock,
+  startCookingAndUpdateStock
+
 } = require("../controllers/dishController");
 const router = express.Router();
 
@@ -26,7 +28,7 @@ router.put('/dishes/:dishId/stop', stopCooking);
 router.get('/dishes/history',getAllDishesHistory);
 
 
-router.put('/dishes/:dishId/add-ing', addIngredientsAndUpdateStock);
+router.put('/dishes/:dishId/add-ing', startCookingAndUpdateStock);
 
 
 
