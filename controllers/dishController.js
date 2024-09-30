@@ -1,5 +1,5 @@
-const Dish = require("../models/Dish");
-const Ingredient = require("../models/Ingredient");
+const Dish = require("../models/dish");
+const Ingredient = require("../models/ingredient");
 const DishHistory = require("../models/dishHistory");
 const mongoose = require("mongoose");
 const ApiFeatures = require("../Utils/apiFeatures");
@@ -32,7 +32,7 @@ exports.getAllDishes = async (req, res) => {
   try {
     const dishes = await Dish.find().populate(
       "ingredients.ingredient",
-      "name quantity"
+      "name stockQuantity"
     );
     res.status(200).json(dishes);
   } catch (error) {
@@ -44,9 +44,10 @@ exports.getDishById = async (req, res) => {
   try {
     const { Id } = req.params;
 
+    // Find the dish by its ID and populate the ingredients with both 'name' and 'stockQuantity'
     const dish = await Dish.findById(Id).populate(
       "ingredients.ingredient",
-      "name"
+      "name stockQuantity" // Populating 'name' and 'stockQuantity' fields from the Ingredient model
     );
 
     if (!dish) {

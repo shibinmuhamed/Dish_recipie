@@ -3,7 +3,7 @@ const { Schema } = mongoose;
 
 const ingredientSchema = new mongoose.Schema({
   ingredient: { type: Schema.Types.ObjectId, ref: "Ingredient" },
-  quantity: { type: Number, required: true }, // Quantity for each ingredient
+  quantity: { type: Number, required: false }, // Quantity for each ingredient
 });
 
 const dishSchema = new mongoose.Schema({
@@ -12,3 +12,4 @@ const dishSchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model("Dish", dishSchema);
+

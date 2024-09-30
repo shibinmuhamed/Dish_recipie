@@ -6,6 +6,8 @@ router.put(
   dishingController.updateIngQuantity
 );
 
+router.post('/dishes/:dishId/add-ingredient',dishingController.addIngredientToDish);
+
 router.delete(
   "/dishes/:dishId/ingredients/:ingredientId",
   dishingController.deleteIngredientFromDish

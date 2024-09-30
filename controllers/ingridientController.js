@@ -1,4 +1,4 @@
-const Ingredient = require("../models/Ingredient");
+const Ingredient = require("../models/ingredient");
 
 const ApiFeatures = require("../Utils/apiFeatures");
 
