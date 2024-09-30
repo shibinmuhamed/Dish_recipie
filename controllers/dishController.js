@@ -321,6 +321,10 @@ exports.startCookingAndUpdateStock = async (req, res) => {
     const { dishId } = req.params;
     const { ingredients } = req.body; // Array of ingredients with new quantities
 
+    if (!Array.isArray(ingredients) || ingredients.length === 0) {
+      return res.status(400).json({ message: "Ingredients must be a non-empty array." });
+    }
+
     // Find the dish by ID
     const dish = await Dish.findById(dishId);
     if (!dish) {

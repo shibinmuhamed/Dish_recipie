@@ -1,10 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const dishingController = require("../controllers/dishingController");
-router.put(
-  "/dishes/:dishId/ingredients/:ingredientId",
-  dishingController.updateIngQuantity
-);
+const dishingController = require("../controllers/dishIngredientController");
+
 
 router.post('/dishes/:dishId/add-ingredient',dishingController.addIngredientToDish);
 

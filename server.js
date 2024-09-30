@@ -4,7 +4,7 @@ const cors = require("cors");
 const connnectDb = require("./config/dbConnection");
 const dishRoutes = require("./routes/dishRoutes");
 const ingredientRoutes = require("./routes/ingRoutes");
-const dishingRoutes = require("./routes/dishingRoutes");
+const dishingRoutes = require("./routes/dishIngredientRoutes");
 const dotenv = require("dotenv").config();
 
 connnectDb();
