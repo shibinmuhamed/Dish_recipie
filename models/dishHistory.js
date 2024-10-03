@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
-// History schema to store the entire state of the dish
 const dishHistorySchema = new Schema({
   dishId: { type: Schema.Types.ObjectId, ref: "Dish", required: true },
   name: { type: String, required: true }, 
