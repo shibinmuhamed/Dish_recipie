@@ -10,7 +10,7 @@ const dishHistorySchema = new Schema({
       quantity: { type: Number, required: true },
     },
   ],
-  status: { type: String, enum: ['cooking started', 'cooking ended'], required: true }, // New field
+  status: { type: String, enum: ['cooking started', 'cooking ended'], required: true },
    updatedAt: { type: Date, default: Date.now }, 
 });
 

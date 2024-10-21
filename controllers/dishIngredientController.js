@@ -1,4 +1,4 @@
-const Dish = require("../models/dish");
+const Dish = require("../models/Dish");
 const Ingredient = require("../models/ingredient");
 
 
