@@ -19,6 +19,7 @@ app.use(express.json());
 app.use(cors({ origin: "*" }));
 //app.use(errorHandler);
 
+
 app.use("/api", dishRoutes);
 app.use("/api", ingredientRoutes);
 app.use("/api", dishingRoutes);
