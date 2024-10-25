@@ -1,8 +1,8 @@
-const Ingredient = require('../../models/ingredient');
+const Dish = require("../models/Dish");
+const Ingredient = require("../models/ingredient");
 const DishHistory = require("../models/dishHistory");
 const mongoose = require("mongoose");
 const ApiFeatures = require("../Utils/apiFeatures");
-const Dish = require("../models/Dish");
 //const tryCatch = require("../Utils/tryCatch");
 
 exports.createDish = async (req, res) => {
