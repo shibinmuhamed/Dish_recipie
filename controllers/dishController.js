@@ -1,4 +1,4 @@
-const Ingredient = require("../models/ingredient");
+const Ingredient = require('../../models/ingredient');
 const DishHistory = require("../models/dishHistory");
 const mongoose = require("mongoose");
 const ApiFeatures = require("../Utils/apiFeatures");
