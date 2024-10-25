@@ -1,5 +1,5 @@
 const Dish = require("../models/Dish");
-const Ingredient = require("../models/ingredient");
+const Ingredient = require("../models/Ingredient");
 
 
 exports.addIngredientToDish = async (req, res) => {
